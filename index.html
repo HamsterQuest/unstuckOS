@@ -1,0 +1,167 @@
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C6ECPEZPPF"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-C6ECPEZPPF');
+</script><!DOCTYPE html>
+<!-- saved from url=(0033)http://inkysplash.zone/Queue.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game GUI</title>
+<script>
+        let authData = null;
+        let selectedRole = "Forward";  // default role
+        let selectedMode = "queue:experimental:competitive";  // default mode
+
+        function selectRole(element) {
+            const buttons = document.querySelectorAll('.role-button');
+            buttons.forEach(button => button.classList.remove('active'));
+            element.classList.add('active');
+            selectedRole = element.textContent;
+        }
+
+        function selectMode(element) {
+            const modes = document.querySelectorAll('.mode');
+            modes.forEach(mode => mode.classList.remove('active'));
+            element.classList.add('active');
+            selectedMode = element.querySelector('img').alt;
+        }
+
+        function uploadFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    authData = JSON.parse(e.target.result);
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function queueUp() {
+            if (!authData) {
+                alert('Please upload the identity.json file.');
+                return;
+            }
+
+            const requestData = {
+                queue: selectedMode,
+                lobbyCode: "",
+                spectator: false,
+                desiredRole: selectedRole
+            };
+
+            fetch('https://prometheus-proxy.odysseyinteractive.gg/api/v2/matchmaking/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Authorization': 'Bearer ' + authData.accessTokens.jwt,
+                    'X-Refresh-Token': authData.accessTokens.refreshToken,
+                    'X-Odyssey-GameVersion': '4.2.8'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert('Queue request sent successfully!');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Failed to send queue request.');
+            });
+        }
+
+        function stopQueue() {
+            if (!authData) {
+                alert('Please upload the identity.json file.');
+                return;
+            }
+
+            fetch('https://prometheus-proxy.odysseyinteractive.gg/api/v2/matchmaking/stop', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Authorization': 'Bearer ' + authData.accessTokens.jwt,
+                    'X-Refresh-Token': authData.accessTokens.refreshToken,
+                    'X-Odyssey-GameVersion': '4.2.8'
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert('Queue stopped successfully!');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Failed to stop queue.');
+            });
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7812005049446762"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="path-text">%LOCALAPPDATA%\OmegaStrikers\identity.json</div>
+        <div class="role-selection">
+            <h2>Choose your preferred role</h2>
+            <div class="roles">
+                <button class="role-button" onclick="selectRole(this)">Goalie</button>
+                <button class="role-button" onclick="selectRole(this)">Flex</button>
+                <button class="role-button active" onclick="selectRole(this)">Forward</button>
+            </div>
+        </div>
+        <div class="mode-selection">
+            <h2>Select Mode</h2>
+            <div class="modes">
+                <div class="mode" onclick="selectMode(this)">
+                    <img src="/UI/competitive.png" alt="queue:ranked:3v3">
+                    <span>Competitive</span>
+                </div>
+                <div class="mode" onclick="selectMode(this)">
+                    <img src="/UI/quickplay.png" alt="queue:quickplay">
+                    <span>Quick Play</span>
+                </div>
+                <div class="mode" onclick="selectMode(this)">
+                    <img src="/UI/normal.png" alt="queue:3v3">
+                    <span>Normal</span>
+                </div>
+                <div class="mode" onclick="selectMode(this)">
+                    <img src="/UI/coop.png" alt="queue:coopvsai">
+                    <span>CO-OP V.S. AI</span>
+                </div>
+                <div class="mode" onclick="selectMode(this)">
+                    <img src="/UI/clones.png" alt="queue:experimental:oneforall">
+                    <span>Clash of Clones</span>
+                </div>
+                <div class="mode" onclick="selectMode(this)">
+                    <img src="/UI/rgm.png" alt="queue:debug:rgm">
+                    <span>Tea Time Tussle</span>
+                </div>
+                <div class="mode" onclick="selectMode(this)">
+                    <img src="/UI/practice.png" alt="queue:practice">
+                    <span>Practice</span>
+                </div>
+            </div>
+        </div>
+    <div class="role-selection">
+        <h2>Choose your preferred role</h2>
+        <div class="roles">
+            <div>
+                <button class="queue-button" onclick="document.getElementById(&#39;file_uploads&#39;).click()">Upload identity.json</button>
+                <input type="file" id="file_uploads" name="file_uploads" accept=".json" multiple="" style="display: none;" onchange="uploadFile(event)">
+            </div>
+            <button class="queue-button" onclick="queueUp()">Queue Up</button>
+            <button class="queue-button" onclick="stopQueue()">Stop Queue</button>
+        </div>
+    </div>
+
+
+</div></body></html>
